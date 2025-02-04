@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FRESH MARKET - Gestion des Commandes</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Styles globaux */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    header {
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/team-3.jpg') center/cover;
+      color: white;
+      text-align: center;
+      padding: 100px 20px;
+      position: relative;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      margin: 0;
+    }
+
+    .contact-info {
+      margin-top: 20px;
+      font-size: 1.2rem;
+    }
+
+    .contact-info a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+    }
+
+    .contact-info a:hover {
+      text-decoration: underline;
+    }
+
+    /* Notification Promotion Journalière */
+    .promotion-notification {
+      background-color: #ffeb3b;
+      color: #333;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1100;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .promotion-notification i {
+      margin-right: 8px;
+    }
+
+    .promotion-notification .close-promo {
+      margin-left: 15px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Notification Livraison à Domicile */
+    .delivery-notification {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      position: absolute;
+      top: 66px;
+      left: 0;
+      right: 0;
+      z-index: 1100;
+    }
+
+    /* Styles pour la modal (popup de résumé de commande) */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1500;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .close-btn:hover {
+      color: #ff5722;
+    }
+
+    /* Style pour la zone de résumé de commande dans la popup */
+    #order-summary {
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    .summary-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .summary-item img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      margin-right: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .summary-item span {
+      margin: 0 5px;
+    }
+
+    .summary-item button {
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      padding: 5px 8px;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+
+    .summary-item button:hover {
+      background-color: #e64a19;
+    }
+
+    #summary-total {
+      font-weight: bold;
+      margin-top: 20px;
+      text-align: right;
+    }
+
+    #confirm-order-btn {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 20px;
+    }
+
+    #confirm-order-btn:hover {
+      background-color: #43a047;
+    }
+
+    /* Styles pour le slider */
+    .slider {
+      overflow: hidden;
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/team-2.jpg') center/cover;
+    }
+
+    .slides {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .slide {
+      min-width: 100%;
+      box-sizing: border-box;
+      text-align: center;
+      position: relative;
+    }
+
+    .slide img {
+      width: 100%;
+      max-height: 995px;
+      object-fit: cover;
+      border-radius: 10px;
+      filter: drop-shadow(0 50px 20px #0009);
+    }
+
+    .slide h3 {
+      margin-top: 10px;
+      font-size: 1.5rem;
+      color: #33d11c;
+
+    }
+
+    /* Styles pour les sections de produits */
+    section {
+      padding: 2rem;
+      background-color: white;
+      margin: 20px 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    section h2 {
+      text-align: center;
+      color: #ff5722;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-10px);
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 418px;
+      object-fit: cover;
+      filter: drop-shadow(0 50px 20px #0009);
+    }
+
+    .product-card h3 {
+      margin: 15px 0 10px;
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    .product-card p {
+      padding: 0 15px;
+      color: #666;
+      font-size: 1rem;
+    }
+
+    .product-card strong {
+      display: block;
+      margin: 10px 0;
+      color: #ff5722;
+      font-size: 1.2rem;
+    }
+
+    /* Styles pour le formulaire de commande */
+    main {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 5px;
+      font-weight: bold;
+      COLOR: #23f904;
+    }
+
+    input,
+    textarea,
+    select {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    button {
+      background-color: #ff5722;
+      color: white;
+      padding: 10px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #e64a19;
+    }
+
+    #total-display {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      color: #ff5722;
+    }
+
+    /* Total à payer en haut à droite */
+    #total-display-header {
+      position: fixed;
+      top: 106px;
+      right: 20px;
+      background-color: #ff5722;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 1rem;
+      z-index: 1200;
+    }
+
+    /* Styles pour la flèche de retour en haut */
+    #back-to-top {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #ff5722;
+      color: white;
+      padding: 10px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: none;
+      z-index: 1000;
+    }
+
+    #back-to-top:hover {
+      background-color: #e64a19;
+    }
+
+
+    @keyframes bounce {
+
+      0%,
+      20%,
+      50%,
+      80%,
+      100% {
+        transform: translateY(0);
+      }
+
+      40% {
+        transform: translateY(-10px);
+      }
+
+      60% {
+        transform: translateY(-5px);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .product-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+
+      .product-card img {
+        height: 362px;
+      }
+
+      section h2 {
+        font-size: 1.8rem;
+      }
+
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .contact-info {
+        font-size: 1rem;
+      }
+    }
+
+    /* Styles pour les boutons de quantité */
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      margin: 10px 0;
+    }
+
+    .quantity-btn {
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quantity-btn:hover {
+      background-color: #e64a19;
+    }
+
+    .quantity-input {
+      width: 50px;
+      text-align: center;
+      margin: 0 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Total à payer en haut à droite -->
+  <div id="total-display-header">
+    Total à payer: 0 DHS
+  </div>
+
+  <!-- Flèche de retour en haut -->
+  <div id="back-to-top">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+
+  <header>
+    <!-- Notification Promotion Journalière -->
+    <div class="promotion-notification" id="promotion-notification">
+      <i class="fas fa-bullhorn"></i>
+      Promotion du jour : Profitez de 10% de réduction sur tous nos arrivages !
+      <span class="close-promo" id="close-promo">&times;</span>
+    </div>
+    <!-- Notification Livraison à Domicile -->
+    <div class="delivery-notification" style="color: rgb(250, 249, 246);">
+      Livraison à domicile <span style="color: blue;">Notre Spécialité</span> !
+    </div>
+    <h1>FRESH MARKET</h1>
+    <div class="contact-info">
+      <a href="https://wa.me/212661112540" target="_blank">
+        <i class="fab fa-whatsapp" style="color: rgb(175, 241, 21); font-size: 24px;"></i> +212 6 61 11 25 40
+      </a>
+      <a href="https://www.google.com/maps?q=FRESH+MARKET+Avenue+HASSAN1+AGADIR" target="_blank">
+        <i class="fas fa-map-marker-alt" style="color: rgb(175, 241, 21); font-size: 20px;"></i> 154 Avenue HASSAN 1
+        CITE DAKHLA, AGADIR
+      </a>
+      <a href="orders.html" style="color: rgb(175, 241, 21);">
+        <i class="fas fa-shopping-cart" style="color: rgb(175, 241, 21);font-size: 20px;"></i> Ma Commande
+      </a>
+    </div>
+  </header>
+
+  <!-- Slider des produits -->
+  <div class="slider">
+    <div class="slides">
+      <div class="slide" data-category="ananas">
+        <img src="images/Ananas.png" alt="Ananas">
+        <h3>Ananas - 40 DHS</h3>
+      </div>
+      <div class="slide" data-category="banana">
+        <img src="images/banana.png" alt="banana">
+        <h3>Banana - 20 DHS</h3>
+      </div>
+      <div class="slide" data-category="menthe">
+        <img src="images/menthe.png" alt="menthe">
+        <h3>Menthe - 6 DHS</h3>
+      </div>
+      <div class="slide" data-category="tanjale">
+        <img src="images/tanjale.png" alt="tanjale">
+        <h3>Tanjale - 10 DHS</h3>
+      </div>
+      <div class="slide" data-category="touma">
+        <img src="images/touma.png" alt="touma">
+        <h3>Touma - 20 DHS</h3>
+      </div>
+      <div class="slide" data-category="khizou">
+        <img src="images/khizou.png" alt="khizou">
+        <h3>Khizou - 20 DHS</h3>
+      </div>
+      <div class="slide" data-category="ouarga">
+        <img src="images/ouarga.png" alt="ouarga">
+        <h3>Ouarga - 20 DHS</h3>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section des admin -->
+  <section id="admin-section">
+    <h2>Nos Arrivages</h2>
+    <div class="product-grid">
+      <div class="product-card">
+        <img src="images/touma.png" alt="touma">
+        <h3>Touma</h3>
+        <p>Une touma fiable Parfaite pour ta snaté.</p>
+        <p><strong>Prix : 20 DHS</strong></p>
+      </div>
+      <div class="product-card">
+        <img src="images/ouarga.png" alt="ouarga">
+        <h3>Ouarga</h3>
+        <p>Notre ouraga végétal est là pour les grandes Maisons. Avec une double forme et il saura vous satisfaire.</p>
+        <p><strong>Prix : 20 DHS</strong></p>
+      </div>
+      <div class="product-card">
+        <img src="images/khizou.png" alt="khizou">
+        <h3>Khizou</h3>
+        <p>Khizou rouge de qualité supérieure, parfait pour ceux qui cherchent une expérience unique.</p>
+        <p><strong>Prix : 20 DHS</strong></p>
+      </div>
+
+
+
+      <div class="product-card">
+        <img src="images/patate.png" alt="patate">
+        <h3>patate</h3>
+        <p>Patate rouge de qualité supérieure, parfait pour ceux qui cherchent une expérience unique.</p>
+        <p><strong>Prix : 20 DHS</strong></p>
+      </div>
+
+
+
+
+
+    </div>
+  </section>
+
+  <!-- Section des Boissons -->
+  <section id="boissons-section">
+    <h2>NOS PROMOTIONS</h2>
+    <div class="product-grid">
+      <div class="product-card">
+        <img src="images/touma.png" alt="touma">
+        <h3>TOUMA</h3>
+        <p>TOUMA magnifique pour ta cuisine. Parfaite pour équilibrer la santé.</p>
+        <p><strong>Prix : 10 DHS</strong></p>
+      </div>
+      <div class="product-card">
+        <img src="images/ouarga.png" alt="ouarga">
+        <h3>OUARGA</h3>
+        <p>OUARGA idéale pour accompagner vos choix préférés.</p>
+        <p><strong>Prix : 20 DHS</strong></p>
+      </div>
+      <div class="product-card">
+        <img src="images/khizou.png" alt="khizou">
+        <h3>KHIZOU</h3>
+        <p>Khizou rouge de qualité supérieure, parfait pour ceux qui cherchent une expérience unique.</p>
+        <p><strong>Prix : 20 DHS</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Formulaire de commande -->
+  <main>
+    <h2 style="color: blue;">Commander Ici</h2>
+    <form id="new-order-form">
+      <label for="client-name" style="color: #333;">Nom :</label>
+      <input type="text" id="client-name" required>
+
+      <label for="client-phone" style="color: #333;">Téléphone :</label>
+      <input type="tel" id="client-phone" required>
+
+      <label for="client-address" style="color: #333;">Adresse :</label>
+      <div class="address-input">
+        <textarea id="client-address" rows="3" required></textarea>
+        <button type="button" id="get-location-btn">
+          <i class="fas fa-map-marker-alt"></i> Utiliser ma localisation
+        </button>
+        <div id="loading-spinner" style="display: none;">
+          <i class="fas fa-spinner fa-spin"></i> Récupération de votre localisation...
+        </div>
+      </div>
+
+      <!-- Champ "Mode de livraison" retiré puisque la notification est affichée en haut -->
+
+      <label style="color: blue;">ARRIVAGE :</label>
+      <div id="admin-categories">
+        <div>
+          <img src="images/Ananas.png" alt="ananas">
+          <label>Ananas - 50 DHS</label>
+          <div class="quantity-controls">
+            <button type="button" class="quantity-btn minus">-</button>
+            <input type="number" class="admin-quantity quantity-input" data-category="ananas" min="0" value="0">
+            <button type="button" class="quantity-btn plus">+</button>
+          </div>
+        </div>
+        <div>
+          <img src="images/banana.png" alt="banana">
+          <label>Banana - 80 DHS</label>
+          <div class="quantity-controls">
+            <button type="button" class="quantity-btn minus">-</button>
+            <input type="number" class="admin-quantity quantity-input" data-category="banana" min="0" value="0">
+            <button type="button" class="quantity-btn plus">+</button>
+          </div>
+        </div>
+
+
+        <div>
+          <img src="images/orange.jpg" alt="orange">
+          <label>ORANGE - 20 DHS</label>
+          <div class="quantity-controls">
+            <button type="button" class="quantity-btn minus">-</button>
+            <input type="number" class="admin-quantity quantity-input" data-category="orange" min="0" value="0">
+            <button type="button" class="quantity-btn plus">+</button>
+          </div>
+        </div>
+
+
+
+
+
+
+        <div>
+          <img src="images/chiba.png" alt="chiba">
+          <label>CHIBA - 10 DHS</label>
+          <div class="quantity-controls">
+            <button type="button" class="quantity-btn minus">-</button>
+            <input type="number" class="admin-quantity quantity-input" data-category="chiba" min="0" value="0">
+            <button type="button" class="quantity-btn plus">+</button>
+          </div>
+        </div>
+      </div>
+
+      <label style="color: blue;">PROMOTIONS :</label>
+      <div id="boissons-list">
+        <div>
+          <img src="images/khoussa.png" alt="khoussa">
+          <label>KHOUSSA - 10 DHS</label>
+          <div class="quantity-controls">
+            <button type="button" class="quantity-btn minus">-</button>
+            <input type="number" class="boisson-quantity quantity-input" data-category="khoussa" min="0" value="0">
+            <button type="button" class="quantity-btn plus">+</button>
+          </div>
+        </div>
+        <div>
+          <img src="images/menthe.png" alt="menthe">
+          <label>Menthe - 15 DHS</label>
+          <div class="quantity-controls">
+            <button type="button" class="quantity-btn minus">-</button>
+            <input type="number" class="boisson-quantity quantity-input" data-category="menthe" min="0" value="0">
+            <button type="button" class="quantity-btn plus">+</button>
+          </div>
+        </div>
+        <div>
+          <img src="images/nectarine.png" alt="nectarine">
+          <label>NECTARINE - 20 DHS</label>
+          <div class="quantity-controls">
+            <button type="button" class="quantity-btn minus">-</button>
+            <input type="number" class="boisson-quantity quantity-input" data-category="nectarine" min="0" value="0">
+            <button type="button" class="quantity-btn plus">+</button>
+          </div>
+        </div>
+        <div>
+          <img src="images/ouarga.png" alt="ouarga">
+          <label>OUARGA - 20 DHS</label>
+          <div class="quantity-controls">
+            <button type="button" class="quantity-btn minus">-</button>
+            <input type="number" class="boisson-quantity quantity-input" data-category="ouarga" min="0" value="0">
+            <button type="button" class="quantity-btn plus">+</button>
+          </div>
+        </div>
+        <div>
+          <img src="images/khizou.png" alt="khizou">
+          <label>KHIZOU - 20 DHS</label>
+          <div class="quantity-controls">
+            <button type="button" class="quantity-btn minus">-</button>
+            <input type="number" class="boisson-quantity quantity-input" data-category="khizou" min="0" value="0">
+            <button type="button" class="quantity-btn plus">+</button>
+          </div>
+        </div>
+
+        <div>
+          <img src="images/patate.png" alt="patate">
+          <label>PATATE - 20 DHS</label>
+          <div class="quantity-controls">
+            <button type="button" class="quantity-btn minus">-</button>
+            <input type="number" class="boisson-quantity quantity-input" data-category="patate" min="0" value="0">
+            <button type="button" class="quantity-btn plus">+</button>
+          </div>
+        </div>
+
+        <div>
+          <img src="images/tomate.jpg" alt="tomate">
+          <label>TOMATE - 20 DHS</label>
+          <div class="quantity-controls">
+            <button type="button" class="quantity-btn minus">-</button>
+            <input type="number" class="boisson-quantity quantity-input" data-category="tomate" min="0" value="0">
+            <button type="button" class="quantity-btn plus">+</button>
+          </div>
+        </div>
+
+
+        <div>
+          <img src="images/onion.jpg" alt="onion">
+          <label>ONION - 20 DHS</label>
+          <div class="quantity-controls">
+            <button type="button" class="quantity-btn minus">-</button>
+            <input type="number" class="boisson-quantity quantity-input" data-category="onion" min="0" value="0">
+            <button type="button" class="quantity-btn plus">+</button>
+          </div>
+        </div>
+
+
+        <div>
+          <img src="images/touma.png" alt="touma">
+          <label>TOUMA - 20 DHS</label>
+          <div class="quantity-controls">
+            <button type="button" class="quantity-btn minus">-</button>
+            <input type="number" class="boisson-quantity quantity-input" data-category="touma" min="0" value="0">
+            <button type="button" class="quantity-btn plus">+</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="total-display">Total à payer : 0 DHS</div>
+      <button type="submit" style="color: blue; font-weight: 700; font-size: x-large;">Commander</button>
+    </form>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 FRESH MARKET - Tous droits réservés.</p>
+    <p>
+      Suivez-nous sur :
+      <a href="https://facebook.com" target="_blank"><i class="fab fa-facebook"></i></a>
+      <a href="https://instagram.com" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://twitter.com" target="_blank"><i class="fab fa-twitter"></i></a>
+    </p>
+  </footer>
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2 id="modal-title"></h2>
+      <p id="modal-description"></p>
+      <img id="modal-image" src="" alt="Image de produit">
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script type="module" src="./script.js"></script>
+  <script>
+    // Gestion de la notification de promotion
+    const promoNotification = document.getElementById('promotion-notification');
+    const closePromo = document.getElementById('close-promo');
+
+    closePromo.addEventListener('click', () => {
+      promoNotification.style.display = 'none';
+    });
+
+    // Gestion des boutons de quantité
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.quantity-controls').forEach(controls => {
+        const minusBtn = controls.querySelector('.minus');
+        const plusBtn = controls.querySelector('.plus');
+        const input = controls.querySelector('input');
+
+        minusBtn.addEventListener('click', () => {
+          if (input.value > 0) {
+            input.value = parseInt(input.value) - 1;
+            input.dispatchEvent(new Event('input'));
+          }
+        });
+
+        plusBtn.addEventListener('click', () => {
+          input.value = parseInt(input.value || 0) + 1;
+          input.dispatchEvent(new Event('input'));
+        });
+      });
+    });
+  </script>
+</body>
+
+</html>

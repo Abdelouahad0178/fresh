@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "lustreshop"
+  },
+  "targets": {
+    "lustreshop": {
+      "hosting": {
+        "freshmarketa": [
+          "1:114153471561:web:5726950a3d15d8a4160998"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

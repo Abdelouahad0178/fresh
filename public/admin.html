@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commandes Reçues - GRAND LUSTER</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Styles globaux */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/multi.PNG') center/cover;
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin: 0;
+        }
+
+        .contact-info {
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+
+        .contact-info a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #ff5722;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .order-card h3 {
+            margin: 0 0 10px;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .order-card p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .order-card strong {
+            color: #ff5722;
+        }
+
+        .order-card .status-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .order-card .status-container label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .order-card .livreur-container {
+            margin-top: 10px;
+        }
+
+        .order-card .livreur-container select {
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .order-card .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .order-card .status.accepte {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .order-card .status.en-traitement {
+            background-color: #ffeb3b;
+            color: #333;
+        }
+
+        .order-card .status.livree {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .order-card .status.annulee {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .order-card .delete-button {
+            margin-top: 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .order-card .delete-button:hover {
+            background-color: #d32f2f;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th,
+        table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        table th {
+            background-color: #ff5722;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .total {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .contact-info {
+                font-size: 1rem;
+            }
+
+            .order-card {
+                padding: 15px;
+            }
+
+            .order-card h3 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>FRESH MARKET</h1>
+        <div class="contact-info">
+            <a href="https://wa.me/212661112540" target="_blank">
+                <i class="fab fa-whatsapp"></i> +212 6 61 11 25 40
+            </a>
+            <a href="https://www.google.com/maps?q=FRESH+MARKET+Avenue+HASSAN1+AGADIR" target="_blank">
+                <i class="fas fa-map-marker-alt"></i> 154 Avenue HASSAN 1 CITE DAKHLA, AGADIR
+            </a>
+            <a href="index.html">
+                <i class="fas fa-home"></i> Retour à l'accueil
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <h2>Commandes Reçues</h2>
+        <div id="orders-list">
+            <!-- Les commandes seront injectées ici dynamiquement -->
+        </div>
+
+        <h2>Commandes Livrées</h2>
+        <table id="livreur-table">
+            <thead>
+                <tr>
+                    <th>Livreur</th>
+                    <th>Nombre de Commandes</th>
+                    <th>Total (DHS)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Les données seront injectées ici dynamiquement -->
+            </tbody>
+        </table>
+
+        <div class="total">
+            <p>Grand Total Livré : <span id="grand-total">0</span> DHS</p>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module">
+        // Importer les modules Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
+        import { getFirestore, collection, onSnapshot, updateDoc, doc, deleteDoc, getDocs } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js';
+
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDFcrId5gBvP-wRUh5Qd8ZtRA6lYLR1ZCM",
+            authDomain: "lustreshop.firebaseapp.com",
+            databaseURL: "https://lustreshop-default-rtdb.firebaseio.com",
+            projectId: "lustreshop",
+            storageBucket: "lustreshop.firebasestorage.app",
+            messagingSenderId: "114153471561",
+            appId: "1:114153471561:web:5726950a3d15d8a4160998",
+            measurementId: "G-9L60YDTKQX"
+        };
+
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        console.log("Firebase initialisé avec succès !");
+
+        // Liste des livreurs
+        const livreurs = [
+            { name: "Yassine", phone: "0612345678" },
+            { name: "Ilyass", phone: "0623456789" },
+            { name: "Rachid", phone: "0634567890" }
+        ];
+
+        // Liste des magasins
+        const magasins = [
+            { id: "1", name: "Magasin 1" },
+            { id: "2", name: "Magasin 2" },
+            { id: "3", name: "Magasin 3" }
+        ];
+
+        const displayOrder = (order, docId) => {
+            const ordersList = document.getElementById('orders-list');
+            if (!ordersList) {
+                console.error("Erreur : Élément 'orders-list' introuvable !");
+                return;
+            }
+
+            const orderCard = document.createElement('div');
+            orderCard.classList.add('order-card');
+
+            // Afficher les détails
+            const adminDetails = order.admin?.map(taco => `<li>${taco.quantity}x ${taco.category}</li>`)?.join('') || "";
+            const boissonsDetails = order.boissons?.map(boisson => `<li>${boisson.quantity}x ${boisson.category}</li>`)?.join('') || "Aucune promotion commandée.";
+            const orderDate = order.timestamp ? new Date(order.timestamp).toLocaleString('fr-FR') : "Date non disponible";
+
+            orderCard.innerHTML = `
+                <h3>Commande de ${order.clientName || 'Inconnu'}</h3>
+                <p><strong>Date :</strong> ${orderDate}</p>
+                <p><strong>Téléphone :</strong> ${order.clientPhone || 'Non spécifié'}</p>
+                <p><strong>Adresse :</strong> ${order.clientAddress || 'Non spécifiée'}</p>
+                <p><strong>Total :</strong> ${order.total?.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' }) || '0 DHS'}</p>
+                <div class="status-container">
+                    <label>
+                        <input type="radio" name="status-${docId}" value="Accepté" ${order.orderStatus === "Accepté" ? "checked" : ""}>
+                        <span class="status accepte">Accepté</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="status-${docId}" value="En traitement" ${order.orderStatus === "En traitement" ? "checked" : ""}>
+                        <span class="status en-traitement">En traitement</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="status-${docId}" value="Livré" ${order.orderStatus === "Livré" ? "checked" : ""}>
+                        <span class="status livree">Livré</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="status-${docId}" value="Annulé" ${order.orderStatus === "Annulé" ? "checked" : ""}>
+                        <span class="status annulee">Annulé</span>
+                    </label>
+                </div>
+                <div class="livreur-container">
+                    <label>Livreur :</label>
+                    <select id="livreur-${docId}">
+                        ${livreurs.map(livreur => `
+                            <option value="${livreur.phone}" ${order.commercialPhone === livreur.phone ? "selected" : ""}>
+                                ${livreur.name} (${livreur.phone})
+                            </option>
+                        `).join('')}
+                    </select>
+                    <label>Magasin :</label>
+                    <select id="magasin-${docId}">
+                        ${magasins.map(magasin => `
+                            <option value="${magasin.id}" ${order.magasinId === magasin.id ? "selected" : ""}>
+                                ${magasin.name}
+                            </option>
+                        `).join('')}
+                    </select>
+                </div>
+                <p><strong>Détails :</strong></p>
+                <ul>${adminDetails}${boissonsDetails}</ul>
+                <button class="delete-button" data-id="${docId}">Supprimer</button>
+            `;
+
+            // Gestion des événements
+            orderCard.querySelectorAll(`input[name="status-${docId}"]`).forEach(input => {
+                input.addEventListener('change', async () => {
+                    await updateDoc(doc(db, 'orders', docId), { orderStatus: input.value });
+                });
+            });
+
+            orderCard.querySelector(`#livreur-${docId}`).addEventListener('change', async (e) => {
+                await updateDoc(doc(db, 'orders', docId), { commercialPhone: e.target.value });
+            });
+
+            orderCard.querySelector(`#magasin-${docId}`).addEventListener('change', async (e) => {
+                await updateDoc(doc(db, 'orders', docId), { magasinId: e.target.value });
+            });
+
+            orderCard.querySelector('.delete-button').addEventListener('click', async () => {
+                if (confirm("Supprimer cette commande ?")) {
+                    await deleteDoc(doc(db, 'orders', docId));
+                }
+            });
+
+            ordersList.appendChild(orderCard);
+        };
+
+        // Mettre à jour le tableau des commandes livrées
+        const updateLivreurTable = async () => {
+            const snapshot = await getDocs(collection(db, 'orders'));
+            const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const livrees = orders.filter(order => order.orderStatus === 'Livré');
+            
+            const livreurStats = livrees.reduce((acc, order) => {
+                const livreur = livreurs.find(l => l.phone === order.commercialPhone) || { name: 'Inconnu', phone: '' };
+                acc[livreur.phone] = acc[livreur.phone] || { name: livreur.name, count: 0, total: 0 };
+                acc[livreur.phone].count++;
+                acc[livreur.phone].total += order.total || 0;
+                return acc;
+            }, {});
+
+            const tbody = document.querySelector('#livreur-table tbody');
+            tbody.innerHTML = Object.values(livreurStats).map(stat => `
+                <tr>
+                    <td>${stat.name}</td>
+                    <td>${stat.count}</td>
+                    <td>${stat.total.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('grand-total').textContent = 
+                Object.values(livreurStats).reduce((sum, stat) => sum + stat.total, 0)
+                    .toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' });
+        };
+
+        // Écouter les mises à jour en temps réel
+        onSnapshot(collection(db, 'orders'), (snapshot) => {
+            const ordersList = document.getElementById('orders-list');
+            ordersList.innerHTML = '';
+            snapshot.docs.forEach(doc => displayOrder(doc.data(), doc.id));
+            updateLivreurTable();
+        });
+    </script>
+</body>
+</html>

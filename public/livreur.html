@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suivi des Commandes - Livreur</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Styles globaux */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    header {
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/multi.PNG') center/cover;
+      color: white;
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    header h1 {
+      font-size: 3rem;
+      margin: 0;
+    }
+
+    .contact-info {
+      margin-top: 20px;
+      font-size: 1.2rem;
+    }
+
+    .contact-info a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+    }
+
+    .contact-info a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-container {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #filter-date {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .order-card {
+      border: 1px solid #ddd;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 4px;
+      background: #f9f9f9;
+    }
+
+    .order-card p {
+      margin: 0.5rem 0;
+    }
+
+    .order-card strong {
+      color: #ff5722;
+    }
+
+    .status-container {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-container label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .status.accepte {
+      background-color: #2196F3;
+      color: white;
+    }
+
+    .status.en-traitement {
+      background-color: #ffeb3b;
+      color: #333;
+    }
+
+    .status.livree {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .status.annulee {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .map-button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .map-button:hover {
+      background-color: #45a049;
+    }
+
+    footer {
+      background-color: #ff5722;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    /* Styles du tableau de résumé */
+    .summary-section {
+      margin-top: 30px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .summary-item {
+      text-align: center;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+
+    .summary-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ff5722;
+      margin: 10px 0;
+    }
+
+    .summary-label {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 600px) {
+      main {
+        padding: 1rem;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>FRESH MARKET</h1>
+    <h2>Suivi des Commandes</h2>
+    <div class="contact-info">
+      <a href="https://wa.me/212661112540" target="_blank">
+        <i class="fab fa-whatsapp"></i> +212 6 61 11 25 40
+      </a>
+      <a href="https://www.google.com/maps?q=FRESH+MARKET+Avenue+HASSAN1+AGADIR" target="_blank">
+        <i class="fas fa-map-marker-alt"></i> 154 Avenue HASSAN 1 CITE DAKHLA, AGADIR
+      </a>
+      <a href="index.html">
+        <i class="fas fa-home"></i> Retour à l'accueil
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <h2>Vos Commandes</h2>
+
+    <!-- Sélecteur de date -->
+    <div class="filter-container">
+      <label for="filter-date">Filtrer par date :</label>
+      <input type="date" id="filter-date">
+    </div>
+
+    <div id="order-details">
+      <p>Chargement de vos commandes...</p>
+    </div>
+
+    <!-- Tableau de résumé -->
+    <div class="summary-section">
+      <h3>Résumé des Ventes</h3>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-value" id="total-orders">0</div>
+          <div class="summary-label">Commandes totales</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-value" id="delivered-orders">0</div>
+          <div class="summary-label">Livrées</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-value" id="progress-orders">0</div>
+          <div class="summary-label">En traitement</div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-value" id="total-sales">0 DHS</div>
+          <div class="summary-label">Chiffre d'affaires (livré)</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 FRESH MARKET - Tous droits réservés.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
+    import { getFirestore, collection, onSnapshot, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDFcrId5gBvP-wRUh5Qd8ZtRA6lYLR1ZCM",
+      authDomain: "lustreshop.firebaseapp.com",
+      databaseURL: "https://lustreshop-default-rtdb.firebaseio.com",
+      projectId: "lustreshop",
+      storageBucket: "lustreshop.firebasestorage.app",
+      messagingSenderId: "114153471561",
+      appId: "1:114153471561:web:5726950a3d15d8a4160998",
+      measurementId: "G-9L60YDTKQX"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Liste des magasins
+    const magasins = [
+      { id: "1", name: "Magasin 1" },
+      { id: "2", name: "Magasin 2" },
+      { id: "3", name: "Magasin 3" }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const orderDetails = document.getElementById('order-details');
+      const filterDate = document.getElementById('filter-date');
+      const livreurPhone = prompt("Veuillez saisir votre numéro de téléphone pour suivre vos commandes :");
+
+      if (!livreurPhone) {
+        orderDetails.innerHTML = "<p>Numéro de téléphone requis pour suivre les commandes.</p>";
+        return;
+      }
+
+      const ordersRef = collection(db, 'orders');
+
+      const updateSummary = (orders) => {
+        const total = orders.length;
+        const delivered = orders.filter(o => o.orderStatus === 'Livré').length;
+        const inProgress = orders.filter(o => o.orderStatus === 'En traitement').length;
+        const totalSales = orders
+          .filter(o => o.orderStatus === 'Livré')
+          .reduce((sum, o) => sum + (o.total || 0), 0);
+
+        document.getElementById('total-orders').textContent = total;
+        document.getElementById('delivered-orders').textContent = delivered;
+        document.getElementById('progress-orders').textContent = inProgress;
+        document.getElementById('total-sales').textContent = 
+          `${totalSales.toLocaleString('fr-FR')} DHS`;
+      };
+
+      const displayOrders = (orders) => {
+        orderDetails.innerHTML = orders.length ? '' : "<p>Aucune commande trouvée pour ce numéro de téléphone.</p>";
+
+        orders.forEach(order => {
+          const orderDate = new Date(order.timestamp);
+          const adminDetails = (order.admin || []).map(
+            taco => `<p><strong>${taco.category}:</strong> ${taco.quantity}</p>`
+          ).join('');
+          const boissonsDetails = (order.boissons || []).map(
+            boisson => `<p><strong>${boisson.category}:</strong> ${boisson.quantity}</p>`
+          ).join('');
+
+          const mapButton = order.clientAddress ? `
+            <button class="map-button" onclick="window.open('https://www.google.com/maps?q=${encodeURIComponent(order.clientAddress)}', '_blank')">
+              <i class="fas fa-map-marker-alt"></i> Ouvrir dans Google Maps
+            </button>
+          ` : '';
+
+          const magasin = magasins.find(m => m.id === order.magasinId) || { name: "Non spécifié" };
+
+          orderDetails.innerHTML += `
+            <div class="order-card">
+              <p><strong>Date :</strong> ${orderDate.toLocaleString('fr-FR')}</p>
+              <p><strong>Client :</strong> ${order.clientName}</p>
+              <p><strong>Téléphone :</strong> ${order.clientPhone}</p>
+              <p><strong>Adresse :</strong> ${order.clientAddress}</p>
+              <p><strong class="status en-traitement">Magasin :</strong> ${magasin.name}</p>
+              ${adminDetails}
+              ${boissonsDetails}
+              <p><strong>Total :</strong> ${order.total.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })}</p>
+              <div class="status-container">
+                <label>
+                  <input type="radio" name="status-${order.id}" value="Accepté" ${order.orderStatus === "Accepté" ? "checked" : ""}>
+                  <span class="status accepte">Accepté</span>
+                </label>
+                <label>
+                  <input type="radio" name="status-${order.id}" value="En traitement" ${order.orderStatus === "En traitement" ? "checked" : ""}>
+                  <span class="status en-traitement">En traitement</span>
+                </label>
+                <label>
+                  <input type="radio" name="status-${order.id}" value="Livré" ${order.orderStatus === "Livré" ? "checked" : ""}>
+                  <span class="status livree">Livré</span>
+                </label>
+                <label>
+                  <input type="radio" name="status-${order.id}" value="Annulé" ${order.orderStatus === "Annulé" ? "checked" : ""}>
+                  <span class="status annulee">Annulé</span>
+                </label>
+              </div>
+              <p><strong>Statut actuel :</strong>
+                <span class="status ${order.orderStatus.toLowerCase().replace(' ', '-')}" data-id="${order.id}">
+                  ${order.orderStatus}
+                </span>
+              </p>
+              ${mapButton}
+            </div>
+          `;
+        });
+
+        // Ajouter les écouteurs pour les mises à jour de statut
+        const allStatusInputs = document.querySelectorAll('.status-container input');
+        allStatusInputs.forEach(input => {
+          input.addEventListener('change', async (event) => {
+            const orderId = input.name.split('-')[1];
+            const newStatus = event.target.value;
+
+            try {
+              await updateDoc(doc(db, 'orders', orderId), { orderStatus: newStatus });
+              const statusSpan = document.querySelector(`.status[data-id="${orderId}"]`);
+              if (statusSpan) {
+                statusSpan.textContent = newStatus;
+                statusSpan.className = `status ${newStatus.toLowerCase().replace(' ', '-')}`;
+              }
+              alert(`Statut de la commande ${orderId} mis à jour en : ${newStatus}`);
+            } catch (error) {
+              console.error("Erreur lors de la mise à jour du statut :", error);
+              alert("Erreur lors de la mise à jour du statut. Veuillez réessayer.");
+            }
+          });
+        });
+      };
+
+      const filterOrders = (snapshot, selectedDate) => {
+        const filteredOrders = [];
+        snapshot.forEach(doc => {
+          const order = doc.data();
+          if (order.commercialPhone !== livreurPhone) return;
+
+          const orderDate = new Date(order.timestamp);
+          const filterDateValue = selectedDate ? new Date(selectedDate) : null;
+
+          if (filterDateValue && (
+            orderDate.getFullYear() !== filterDateValue.getFullYear() ||
+            orderDate.getMonth() !== filterDateValue.getMonth() ||
+            orderDate.getDate() !== filterDateValue.getDate()
+          )) return;
+
+          filteredOrders.push({ id: doc.id, ...order });
+        });
+
+        displayOrders(filteredOrders);
+        updateSummary(filteredOrders);
+      };
+
+      // Écouteur pour le filtre de date
+      filterDate.addEventListener('change', () => {
+        onSnapshot(ordersRef, (snapshot) => {
+          filterOrders(snapshot, filterDate.value);
+        });
+      });
+
+      // Chargement initial
+      onSnapshot(ordersRef, (snapshot) => {
+        filterOrders(snapshot);
+      });
+    });
+  </script>
+</body>
+</html>

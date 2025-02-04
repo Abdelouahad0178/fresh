@@ -1,0 +1,629 @@
+/* Style global */
+body {
+    /* Headings */
+font-family: 'Poppins', sans-serif;
+
+/* Body */
+font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+    overflow-x: hidden; /* Empêcher le débordement horizontal */
+}
+
+/* Header */
+header {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/multi11.PNG') center/cover;
+    color: white;
+    text-align: center;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+header h1 {
+    font-size: 2rem;
+    margin: 0;
+}
+
+header .contact-info {
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+header .contact-info a {
+    color: white;
+    text-decoration: none;
+    margin-right: 17px;
+}
+
+header .contact-info a:hover {
+    text-decoration: underline;
+}
+
+/* Style du statut d'ouverture */
+#status-display {
+    position: fixed;
+    top: 10px;
+    right: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #ff5722;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 5px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Ajuste la position du total et du statut */
+#total-display-header {
+    position: fixed;
+    top: 50px;
+    right: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #ff5722;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+}
+
+/* Slider */
+.slider {
+    max-width: 100%;
+    overflow: hidden;
+    margin: 20px auto;
+    position: relative;
+    border-radius: 8px;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/multi.PNG') center/cover;
+}
+
+.slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    
+}
+
+.slide {
+    min-width: 100%;
+    text-align: center;
+}
+
+.slide img {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    border-radius: 8px;
+    cursor: pointer;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.slide h3 {
+    margin-top: 10px;
+    color: #ff5722;
+    font-size: 1.2rem;
+}
+
+/* Main content */
+main {
+    max-width: 800px;
+    margin: 20px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #ff5722;
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.1));
+}
+
+label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input,
+textarea {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #ff5722;
+    color: #fff;
+    padding: 10px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #e64a19;
+}
+
+/* admin categories */
+#admin-categories {
+    display: flex
+;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(images/team-1.jpg) center / cover;
+    flex-wrap: wrap;
+}
+
+#admin-categories img {
+    width: 100px;
+    height: 117px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    object-fit: cover; /* Assurer que les images conservent leurs proportions */
+    filter: drop-shadow(0 50px 20px #0009);
+}
+
+/* Boissons categories */
+#boissons-list {
+    display: flex;
+    gap: 20px;
+    
+    justify-content: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('images/team-2.jpg') center/cover;
+}
+
+#boissons-list img {
+    width: 100px;
+    height: 124px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    object-fit: cover; /* Assurer que les images conservent leurs proportions */
+    filter: drop-shadow(0 50px 20px #0009);
+}
+
+#boissons-list div {
+    display: flex
+;
+    flex-direction: row;
+    gap: 5px;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+#boissons-list label {
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+
+
+#total-display {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-top: 20px;
+    color: #ff5722;
+    text-align: center;
+}
+
+/* Footer */
+footer {
+    background-color: #ff5722;
+    color: #fff;
+    text-align: center;
+    padding: 20px 10px;
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+}
+
+footer p {
+    margin: 10px 0;
+}
+
+footer a {
+    color: #fff;
+    margin: 0 10px;
+    text-decoration: none;
+    font-size: 18px;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: #844b3e;
+}
+
+footer a i {
+    vertical-align: middle;
+}
+
+footer p:last-child {
+    margin-top: 15px;
+    font-size: 16px;
+}
+
+/* Modale */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content img {
+    width: 100%;
+    max-height: 646px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin: 20px 0;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Styles pour les icônes de pagination */
+.pagination {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+}
+
+.pagination .pagination-dot {
+    width: 10px;
+    height: 10px;
+    background-color: rgba(135, 135, 181, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.pagination .pagination-dot.active {
+    background-color: #ff5722;
+}
+
+/* Styles pour aligner les boutons radio du statut en ligne */
+.order .status-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+}
+
+.order .status-container label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+}
+
+
+
+/* Supprimer les flèches des inputs number */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+
+
+.editable-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 5px 0;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+.quantity-input {
+    width: 70px;
+    padding: 8px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.quantity-input:focus {
+    border-color: #2196F3;
+    outline: none;
+}
+
+.remove-item {
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+    margin-left: auto;
+    transition: background 0.2s ease;
+}
+
+.remove-item:hover {
+    background: #cc0000;
+}
+
+.order-total {
+    color: #4CAF50;
+    font-size: 1.2em;
+}
+
+.items-container h4 {
+    color: #666;
+    margin: 15px 0 5px 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+
+
+.quantity-input {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    text-align: center;
+  }
+  
+  .quantity-input:focus {
+    border-color: #4caf50;
+    outline: none;
+  }
+
+
+
+
+
+
+
+
+/* Responsivité */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    header .contact-info {
+        font-size: 0.8rem;
+    }
+
+    .slide img {
+        max-width: 90%;
+    }
+
+    #admin-categories img,
+    #boissons-list img {
+        width: 80px;
+        height: 80px;
+    }
+
+    #total-display-header {
+        font-size: 1rem;
+        top: 40px;
+        right: 10px;
+        padding: 8px 15px;
+    }
+
+    #status-display {
+        font-size: 1rem;
+        padding: 5px 15px;
+    }
+
+    main {
+        margin: 10px;
+        padding: 15px;
+    }
+
+    footer {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        height: 200px;
+    }
+
+    header h1 {
+        font-size: 1.2rem;
+    }
+
+    header .contact-info {
+        font-size: 0.7rem;
+    }
+
+    #admin-categories img,
+    #boissons-list img {
+        width: 83px;
+        height: 92px;
+    }
+
+    #total-display-header {
+        font-size: 0.9rem;
+        top: 35px;
+        right: 49px;
+        padding: 3px 4px;
+    }
+
+    #status-display {
+        font-size: 0.9rem;
+        padding: 3px 10px;
+    }
+
+    .modal-content img {
+        max-height: 434px;
+    }
+}
+
+/* Styles pour la section Paiement à la Livraison */
+#payment-section {
+    padding: 2rem;
+    background-color: white;
+    margin: 20px 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.payment-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.payment-icon {
+    font-size: 2.5rem;
+    color: #ff5722;
+}
+
+.payment-text {
+    flex: 1;
+}
+
+.payment-text p {
+    margin: 0.5rem 0;
+    color: #333;
+}
+
+.payment-text strong {
+    color: #ff5722;
+}
+
+/* Styles pour l'option de paiement dans le formulaire */
+.payment-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    color: #28a745;
+    font-size: 1rem;
+}
+
+.payment-option i {
+    font-size: 1.2rem;
+}
+
+/* Mode Nocturne */
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-mode header {
+    background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('images/lusters3.avif') center/cover;
+}
+
+body.dark-mode main,
+body.dark-mode section,
+body.dark-mode .modal-content {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+body.dark-mode footer {
+    background-color: #333;
+    color: #ffffff;
+}
+
+body.dark-mode .product-card {
+    background-color: #2c2c2c;
+    color: #2c2727;
+}
+
+body.dark-mode .product-card p {
+    color: #f3eded;
+}
+
+body.dark-mode .payment-option {
+    color: #28a745;
+}
+
+body.dark-mode .payment-text p {
+    color: #4681aa;
+}
+
+body.dark-mode .payment-text strong {
+    color: #ff5722;
+}
+
+body.dark-mode #total-display,
+body.dark-mode #total-display-header {
+    color: #ff5722;
+}
+
+body.dark-mode .modal-content {
+    background-color: #2c2c2c;
+    color: #ffffff;
+}
+
+body.dark-mode .close-btn {
+    color: #ffffff;
+}
+
+body.dark-mode .close-btn:hover {
+    color: #ff5722;
+}
