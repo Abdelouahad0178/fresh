@@ -240,165 +240,296 @@
         </div>
     </main>
 
-    <!-- Scripts -->
-    <script type="module">
-        // Importer les modules Firebase
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
-        import { getFirestore, collection, onSnapshot, updateDoc, doc, deleteDoc, getDocs } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js';
-
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDFcrId5gBvP-wRUh5Qd8ZtRA6lYLR1ZCM",
-            authDomain: "lustreshop.firebaseapp.com",
-            databaseURL: "https://lustreshop-default-rtdb.firebaseio.com",
-            projectId: "lustreshop",
-            storageBucket: "lustreshop.firebasestorage.app",
-            messagingSenderId: "114153471561",
-            appId: "1:114153471561:web:5726950a3d15d8a4160998",
-            measurementId: "G-9L60YDTKQX"
-        };
-
-        // Initialiser Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        console.log("Firebase initialisé avec succès !");
-
-        // Liste des livreurs
-        const livreurs = [
-            { name: "Yassine", phone: "0612345678" },
-            { name: "Ilyass", phone: "0623456789" },
-            { name: "Rachid", phone: "0634567890" }
-        ];
-
-        // Liste des magasins
-        const magasins = [
-            { id: "1", name: "Magasin 1" },
-            { id: "2", name: "Magasin 2" },
-            { id: "3", name: "Magasin 3" }
-        ];
-
-        const displayOrder = (order, docId) => {
-            const ordersList = document.getElementById('orders-list');
-            if (!ordersList) {
-                console.error("Erreur : Élément 'orders-list' introuvable !");
-                return;
-            }
-
-            const orderCard = document.createElement('div');
-            orderCard.classList.add('order-card');
-
-            // Afficher les détails
-            const adminDetails = order.admin?.map(taco => `<li>${taco.quantity}x ${taco.category}</li>`)?.join('') || "";
-            const boissonsDetails = order.boissons?.map(boisson => `<li>${boisson.quantity}x ${boisson.category}</li>`)?.join('') || "Aucune promotion commandée.";
-            const orderDate = order.timestamp ? new Date(order.timestamp).toLocaleString('fr-FR') : "Date non disponible";
-
-            orderCard.innerHTML = `
-                <h3>Commande de ${order.clientName || 'Inconnu'}</h3>
-                <p><strong>Date :</strong> ${orderDate}</p>
-                <p><strong>Téléphone :</strong> ${order.clientPhone || 'Non spécifié'}</p>
-                <p><strong>Adresse :</strong> ${order.clientAddress || 'Non spécifiée'}</p>
-                <p><strong>Total :</strong> ${order.total?.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' }) || '0 DHS'}</p>
-                <div class="status-container">
-                    <label>
-                        <input type="radio" name="status-${docId}" value="Accepté" ${order.orderStatus === "Accepté" ? "checked" : ""}>
-                        <span class="status accepte">Accepté</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="status-${docId}" value="En traitement" ${order.orderStatus === "En traitement" ? "checked" : ""}>
-                        <span class="status en-traitement">En traitement</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="status-${docId}" value="Livré" ${order.orderStatus === "Livré" ? "checked" : ""}>
-                        <span class="status livree">Livré</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="status-${docId}" value="Annulé" ${order.orderStatus === "Annulé" ? "checked" : ""}>
-                        <span class="status annulee">Annulé</span>
-                    </label>
-                </div>
-                <div class="livreur-container">
-                    <label>Livreur :</label>
-                    <select id="livreur-${docId}">
-                        ${livreurs.map(livreur => `
-                            <option value="${livreur.phone}" ${order.commercialPhone === livreur.phone ? "selected" : ""}>
-                                ${livreur.name} (${livreur.phone})
-                            </option>
-                        `).join('')}
-                    </select>
-                    <label>Magasin :</label>
-                    <select id="magasin-${docId}">
-                        ${magasins.map(magasin => `
-                            <option value="${magasin.id}" ${order.magasinId === magasin.id ? "selected" : ""}>
-                                ${magasin.name}
-                            </option>
-                        `).join('')}
-                    </select>
-                </div>
-                <p><strong>Détails :</strong></p>
-                <ul>${adminDetails}${boissonsDetails}</ul>
-                <button class="delete-button" data-id="${docId}">Supprimer</button>
-            `;
-
-            // Gestion des événements
-            orderCard.querySelectorAll(`input[name="status-${docId}"]`).forEach(input => {
-                input.addEventListener('change', async () => {
-                    await updateDoc(doc(db, 'orders', docId), { orderStatus: input.value });
-                });
-            });
-
-            orderCard.querySelector(`#livreur-${docId}`).addEventListener('change', async (e) => {
-                await updateDoc(doc(db, 'orders', docId), { commercialPhone: e.target.value });
-            });
-
-            orderCard.querySelector(`#magasin-${docId}`).addEventListener('change', async (e) => {
-                await updateDoc(doc(db, 'orders', docId), { magasinId: e.target.value });
-            });
-
-            orderCard.querySelector('.delete-button').addEventListener('click', async () => {
-                if (confirm("Supprimer cette commande ?")) {
-                    await deleteDoc(doc(db, 'orders', docId));
-                }
-            });
-
-            ordersList.appendChild(orderCard);
-        };
-
-        // Mettre à jour le tableau des commandes livrées
-        const updateLivreurTable = async () => {
-            const snapshot = await getDocs(collection(db, 'orders'));
-            const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            const livrees = orders.filter(order => order.orderStatus === 'Livré');
-            
-            const livreurStats = livrees.reduce((acc, order) => {
-                const livreur = livreurs.find(l => l.phone === order.commercialPhone) || { name: 'Inconnu', phone: '' };
-                acc[livreur.phone] = acc[livreur.phone] || { name: livreur.name, count: 0, total: 0 };
-                acc[livreur.phone].count++;
-                acc[livreur.phone].total += order.total || 0;
-                return acc;
-            }, {});
-
-            const tbody = document.querySelector('#livreur-table tbody');
-            tbody.innerHTML = Object.values(livreurStats).map(stat => `
-                <tr>
-                    <td>${stat.name}</td>
-                    <td>${stat.count}</td>
-                    <td>${stat.total.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })}</td>
-                </tr>
-            `).join('');
-
-            document.getElementById('grand-total').textContent = 
-                Object.values(livreurStats).reduce((sum, stat) => sum + stat.total, 0)
-                    .toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' });
-        };
-
-        // Écouter les mises à jour en temps réel
-        onSnapshot(collection(db, 'orders'), (snapshot) => {
-            const ordersList = document.getElementById('orders-list');
-            ordersList.innerHTML = '';
-            snapshot.docs.forEach(doc => displayOrder(doc.data(), doc.id));
-            updateLivreurTable();
+    
+<!-- Scripts -->
+<script type="module">
+    // Importer les modules Firebase
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
+    import {
+      getFirestore,
+      collection,
+      onSnapshot,
+      updateDoc,
+      doc,
+      deleteDoc,
+      getDocs
+    } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js';
+  
+    // Configuration Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDFcrId5gBvP-wRUh5QdRA6lYLR1ZCM",
+      authDomain: "lustreshop.firebaseapp.com",
+      databaseURL: "https://lustreshop-default-rtdb.firebaseio.com",
+      projectId: "lustreshop",
+      storageBucket: "lustreshop.firebasestorage.app",
+      messagingSenderId: "114153471561",
+      appId: "1:114153471561:web:5726950a3d15d8a4160998",
+      measurementId: "G-9L60YDTKQX"
+    };
+  
+    // Initialiser Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    console.log("Firebase initialisé avec succès !");
+  
+    // Liste des livreurs
+    const livreurs = [
+      { name: "Yassine", phone: "0612345678" },
+      { name: "Ilyass", phone: "0623456789" },
+      { name: "Rachid", phone: "0634567890" }
+    ];
+  
+    // Liste des magasins
+    const magasins = [
+      { id: "1", name: "Magasin 1" },
+      { id: "2", name: "Magasin 2" },
+      { id: "3", name: "Magasin 3" }
+    ];
+  
+    /**
+     * Fonction qui récupère et normalise la valeur du prix depuis l'objet produit.
+     * Elle vérifie d'abord la propriété "price", puis "prix". 
+     * Elle retire les caractères indésirables, remplace la virgule par un point et renvoie un nombre.
+     */
+    const getNormalizedPrice = (item) => {
+      let rawPrice = "";
+      if (item.price !== undefined && item.price !== null && item.price.toString().trim() !== "") {
+        rawPrice = item.price.toString();
+      } else if (item.prix !== undefined && item.prix !== null && item.prix.toString().trim() !== "") {
+        rawPrice = item.prix.toString();
+      } else {
+        return 0;
+      }
+      // Retirer tout caractère sauf chiffres, virgule, point et signe négatif
+      rawPrice = rawPrice.replace(/[^\d,.-]/g, '');
+      // Remplacer la virgule par un point
+      rawPrice = rawPrice.replace(',', '.');
+      const parsed = parseFloat(rawPrice);
+      if (isNaN(parsed)) {
+        console.error("Erreur de conversion du prix:", rawPrice);
+        return 0;
+      }
+      return parsed;
+    };
+  
+    /**
+     * Affiche une commande et gère ses actions.
+     * @param {Object} order - Données de la commande
+     * @param {string} docId - ID du document Firestore
+     */
+    const displayOrder = (order, docId) => {
+      const ordersList = document.getElementById('orders-list');
+      if (!ordersList) {
+        console.error("Erreur : Élément 'orders-list' introuvable !");
+        return;
+      }
+  
+      const orderCard = document.createElement('div');
+      orderCard.classList.add('order-card');
+  
+      // Préparer l'affichage des produits dans "admin"
+      const adminDetails = order.admin && order.admin.length > 0
+        ? order.admin.map(item => {
+            const price = getNormalizedPrice(item);
+            console.log(`Produit admin "${item.category}" - Prix initial: ${item.price || item.prix}, Normalisé: ${price}`);
+            return `<li>${item.quantity} x ${item.category} (${price.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })} chacun)</li>`;
+          }).join('')
+        : "Aucun produit dans la section admin.";
+  
+      // Préparer l'affichage des produits dans "boissons"
+      const boissonsDetails = order.boissons && order.boissons.length > 0
+        ? order.boissons.map(item => {
+            const price = getNormalizedPrice(item);
+            console.log(`Produit boissons "${item.category}" - Prix initial: ${item.price || item.prix}, Normalisé: ${price}`);
+            return `<li>${item.quantity} x ${item.category} (${price.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })} chacun)</li>`;
+          }).join('')
+        : "Aucune promotion commandée.";
+  
+      const orderDate = order.timestamp
+        ? new Date(order.timestamp).toLocaleString('fr-FR')
+        : "Date non disponible";
+  
+      orderCard.innerHTML = `
+        <h3>Commande de ${order.clientName || 'Inconnu'}</h3>
+        <p><strong>Date :</strong> ${orderDate}</p>
+        <p><strong>Téléphone :</strong> ${order.clientPhone || 'Non spécifié'}</p>
+        <p><strong>Adresse :</strong> ${order.clientAddress || 'Non spécifiée'}</p>
+        <p><strong>Total :</strong> ${
+          typeof order.total === "number"
+            ? order.total.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })
+            : '0 DHS'
+        }</p>
+        <div class="status-container">
+            <label>
+                <input type="radio" name="status-${docId}" value="Accepté" ${order.orderStatus === "Accepté" ? "checked" : ""}>
+                <span class="status accepte">Accepté</span>
+            </label>
+            <label>
+                <input type="radio" name="status-${docId}" value="En traitement" ${order.orderStatus === "En traitement" ? "checked" : ""}>
+                <span class="status en-traitement">En traitement</span>
+            </label>
+            <label>
+                <input type="radio" name="status-${docId}" value="Livré" ${order.orderStatus === "Livré" ? "checked" : ""}>
+                <span class="status livree">Livré</span>
+            </label>
+            <label>
+                <input type="radio" name="status-${docId}" value="Annulé" ${order.orderStatus === "Annulé" ? "checked" : ""}>
+                <span class="status annulee">Annulé</span>
+            </label>
+        </div>
+        <div class="livreur-container">
+            <label>Livreur :</label>
+            <select id="livreur-${docId}">
+                ${livreurs.map(livreur => `
+                    <option value="${livreur.phone}" ${order.commercialPhone === livreur.phone ? "selected" : ""}>
+                        ${livreur.name} (${livreur.phone})
+                    </option>
+                `).join('')}
+            </select>
+            <label>Magasin :</label>
+            <select id="magasin-${docId}">
+                ${magasins.map(magasin => `
+                    <option value="${magasin.id}" ${order.magasinId === magasin.id ? "selected" : ""}>
+                        ${magasin.name}
+                    </option>
+                `).join('')}
+            </select>
+        </div>
+        <p><strong>Détails :</strong></p>
+        <ul>${adminDetails}<br>${boissonsDetails}</ul>
+        <div class="action-buttons">
+            <button class="modify-button" data-id="${docId}">Modifier</button>
+            <button class="delete-button" data-id="${docId}">Supprimer</button>
+        </div>
+      `;
+  
+      // Mise à jour du statut en temps réel
+      orderCard.querySelectorAll(`input[name="status-${docId}"]`).forEach(input => {
+        input.addEventListener('change', async () => {
+          await updateDoc(doc(db, 'orders', docId), { orderStatus: input.value });
         });
-    </script>
+      });
+  
+      // Mise à jour du livreur
+      orderCard.querySelector(`#livreur-${docId}`).addEventListener('change', async (e) => {
+        await updateDoc(doc(db, 'orders', docId), { commercialPhone: e.target.value });
+      });
+  
+      // Mise à jour du magasin
+      orderCard.querySelector(`#magasin-${docId}`).addEventListener('change', async (e) => {
+        await updateDoc(doc(db, 'orders', docId), { magasinId: e.target.value });
+      });
+  
+      // Bouton Modifier : permet de modifier les quantités et les prix, puis recalcule automatiquement le total
+      orderCard.querySelector('.modify-button').addEventListener('click', async () => {
+        // Pour la section "admin"
+        let updatedAdmin = [];
+        if (order.admin && order.admin.length > 0) {
+          for (let i = 0; i < order.admin.length; i++) {
+            let item = order.admin[i];
+            let newQuantity = prompt(`Modifier la quantité pour "${item.category}" (actuel: ${item.quantity})`, item.quantity);
+            newQuantity = newQuantity === null ? item.quantity : parseInt(newQuantity) || item.quantity;
+            let newPrice = prompt(`Modifier le prix pour "${item.category}" (actuel: ${item.price || item.prix})`, item.price || item.prix);
+            newPrice = newPrice === null ? (item.price || item.prix) : parseFloat(newPrice.toString().replace(',', '.')) || (item.price || item.prix);
+            updatedAdmin.push({ ...item, quantity: newQuantity, price: newPrice });
+          }
+        } else {
+          updatedAdmin = order.admin;
+        }
+  
+        // Pour la section "boissons"
+        let updatedBoissons = [];
+        if (order.boissons && order.boissons.length > 0) {
+          for (let i = 0; i < order.boissons.length; i++) {
+            let item = order.boissons[i];
+            let newQuantity = prompt(`Modifier la quantité pour "${item.category}" (actuel: ${item.quantity})`, item.quantity);
+            newQuantity = newQuantity === null ? item.quantity : parseInt(newQuantity) || item.quantity;
+            let newPrice = prompt(`Modifier le prix pour "${item.category}" (actuel: ${item.price || item.prix})`, item.price || item.prix);
+            newPrice = newPrice === null ? (item.price || item.prix) : parseFloat(newPrice.toString().replace(',', '.')) || (item.price || item.prix);
+            updatedBoissons.push({ ...item, quantity: newQuantity, price: newPrice });
+          }
+        } else {
+          updatedBoissons = order.boissons;
+        }
+  
+        // Recalcul automatique du total
+        let newTotal = 0;
+        if (updatedAdmin && updatedAdmin.length > 0) {
+          newTotal += updatedAdmin.reduce((sum, item) => sum + (item.quantity * getNormalizedPrice(item)), 0);
+        }
+        if (updatedBoissons && updatedBoissons.length > 0) {
+          newTotal += updatedBoissons.reduce((sum, item) => sum + (item.quantity * getNormalizedPrice(item)), 0);
+        }
+  
+        alert(`Nouveau total calculé automatiquement: ${newTotal.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })}`);
+  
+        await updateDoc(doc(db, 'orders', docId), {
+          admin: updatedAdmin,
+          boissons: updatedBoissons,
+          total: newTotal
+        });
+      });
+  
+      // Bouton Supprimer : supprime la commande après confirmation
+      orderCard.querySelector('.delete-button').addEventListener('click', async () => {
+        if (confirm("Supprimer cette commande ?")) {
+          await deleteDoc(doc(db, 'orders', docId));
+        }
+      });
+  
+      ordersList.appendChild(orderCard);
+    };
+  
+    /**
+     * Met à jour le tableau récapitulatif des commandes livrées et calcule le grand total
+     */
+    const updateLivreurTable = async () => {
+      const snapshot = await getDocs(collection(db, 'orders'));
+      const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const livrees = orders.filter(order => order.orderStatus === 'Livré');
+  
+      const livreurStats = livrees.reduce((acc, order) => {
+        const orderTotal = Number(order.total) || 0;
+        const livreur = livreurs.find(l => l.phone === order.commercialPhone) || { name: 'Inconnu', phone: '' };
+  
+        if (!acc[livreur.phone]) {
+          acc[livreur.phone] = { name: livreur.name, count: 0, total: 0 };
+        }
+        acc[livreur.phone].count++;
+        acc[livreur.phone].total += orderTotal;
+        return acc;
+      }, {});
+  
+      const tbody = document.querySelector('#livreur-table tbody');
+      tbody.innerHTML = Object.values(livreurStats).map(stat => `
+        <tr>
+            <td>${stat.name}</td>
+            <td>${stat.count}</td>
+            <td>${stat.total.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })}</td>
+        </tr>
+      `).join('');
+  
+      const grandTotal = Object.values(livreurStats).reduce((sum, stat) => sum + stat.total, 0);
+      document.getElementById('grand-total').textContent =
+        grandTotal.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' });
+    };
+  
+    /**
+     * Écoute en temps réel les mises à jour de la collection "orders" et rafraîchit l'affichage
+     */
+    onSnapshot(collection(db, 'orders'), (snapshot) => {
+      const ordersList = document.getElementById('orders-list');
+      ordersList.innerHTML = '';
+      snapshot.docs.forEach(doc => displayOrder(doc.data(), doc.id));
+      updateLivreurTable();
+    });
+  </script>
+  
+  
+  
+  
+                      
+  
+  
 </body>
 </html>
