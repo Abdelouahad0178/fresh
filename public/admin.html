@@ -330,18 +330,16 @@
       // Préparer l'affichage des produits dans "admin"
       const adminDetails = order.admin && order.admin.length > 0
         ? order.admin.map(item => {
-            const price = getNormalizedPrice(item);
-            console.log(`Produit admin "${item.category}" - Prix initial: ${item.price || item.prix}, Normalisé: ${price}`);
-            return `<li>${item.quantity} x ${item.category} (${price.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })} chacun)</li>`;
+            const price = item.price || item.prix || 0;
+            return `<li>${item.quantity} x ${item.category} (${price.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })})</li>`;
           }).join('')
         : "Aucun produit dans la section admin.";
   
       // Préparer l'affichage des produits dans "boissons"
       const boissonsDetails = order.boissons && order.boissons.length > 0
         ? order.boissons.map(item => {
-            const price = getNormalizedPrice(item);
-            console.log(`Produit boissons "${item.category}" - Prix initial: ${item.price || item.prix}, Normalisé: ${price}`);
-            return `<li>${item.quantity} x ${item.category} (${price.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })} chacun)</li>`;
+            const price = item.price || item.prix || 0;
+            return `<li>${item.quantity} x ${item.category} (${price.toLocaleString('fr-FR', { style: 'currency', currency: 'MAD' })})</li>`;
           }).join('')
         : "Aucune promotion commandée.";
   
@@ -524,12 +522,5 @@
       updateLivreurTable();
     });
   </script>
-  
-  
-  
-  
-                      
-  
-  
 </body>
 </html>
